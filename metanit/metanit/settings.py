@@ -49,7 +49,8 @@ AUTH_USER_MODEL = 'database.CustomUser'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',  # Используем Token аутентификацию
-    ],
+        # 'rest_framework.permissions.IsAuthenticated',
+    ]
 }
 
 MIDDLEWARE = [
