@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.core.exceptions import ValidationError
 from database.models import Files
+from rest_framework.parsers import MultiPartParser
 from files.serializers import FilesSerializer
 import os
 
@@ -16,9 +17,10 @@ allowed_types = ["application/pdf"
 
 class FileUploadView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser]
 
     def post(self, request, *args, **kwargs):
-        files = request.FILES.get('file')
+        files = request.FILES.get('files[]')
         print(files)
 
         if not files:
@@ -32,7 +34,7 @@ class FileUploadView(APIView):
         for file in files:
             if file.size > 2 * 1024 * 1024:
                 response_data.append({
-                    "success": True,
+                    "success": False,
                     "message": f"File {file.name} exceeds 2 MB size limit",
                 })
                 continue
@@ -55,7 +57,7 @@ class FileUploadView(APIView):
             user_file = Files.objects.create(
                 user=request.user,
                 file=file,
-                name=file_name,
+                name=file_name
             )
 
             serializer = FilesSerializer(user_file, context={'request': request})
