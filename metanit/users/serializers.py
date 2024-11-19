@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model, authenticate
+from database.models import Files
 
 
 def password_validator(password):
@@ -73,3 +74,4 @@ class AuthorizationSerializer(serializers.Serializer):
 
         data["user"] = user
         return data
+

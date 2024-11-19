@@ -1,5 +1,5 @@
 from django.contrib import admin
-from database.models import CustomUser
+from database.models import CustomUser, Files
 
 @admin.register(CustomUser)
 class CustomUserAdmin(admin.ModelAdmin):
@@ -10,3 +10,7 @@ class CustomUserAdmin(admin.ModelAdmin):
         ('Важные даты', {'fields': ('last_login', 'date_joined')}),
     )
 
+
+@admin.register(Files)
+class FilesAdmin(admin.ModelAdmin):
+    list_display = ('id', 'file')

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'files.apps.FilesConfig'
 ]
 
 # замена базового пользователя на кастомного

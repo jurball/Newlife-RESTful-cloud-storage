@@ -1,10 +1,8 @@
-from django.contrib.auth import authenticate
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from users.serializers import RegistrationSerializer, AuthorizationSerializer
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from rest_framework.exceptions import ValidationError
 from rest_framework.authtoken.models import Token
 
 class RegistrationView(APIView):

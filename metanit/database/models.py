@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User, AbstractUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.conf import settings
+from .utils import generate_file_id, user_directory_path
 
 
 class CustomUserManager(BaseUserManager):
@@ -45,3 +46,24 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.email
+
+class Files(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='files',
+        verbose_name='Пользователь'
+    )
+    file = models.FileField(upload_to=user_directory_path, verbose_name='Файл')
+    name = models.CharField(max_length=255, verbose_name='Имя')
+    file_id = models.CharField(max_length=10, default=generate_file_id, unique=True)
+
+    class Meta:
+        verbose_name = 'Файл'
+        verbose_name_plural = 'Файлы'
+        unique_together = ('user', 'file_id')
+
+    def __str__(self):
+        return self.name
+
+
