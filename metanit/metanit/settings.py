@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'rest.apps.RestConfig',
+    'users.apps.UsersConfig',
     'database.apps.DatabaseConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -49,7 +49,9 @@ AUTH_USER_MODEL = 'database.CustomUser'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',  # Используем Token аутентификацию
-        # 'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
     ]
 }
 
@@ -92,7 +94,7 @@ WSGI_APPLICATION = 'metanit.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'newlife-without-SimpleJWT',
+        'NAME': 'newlife_without_simplejwt',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',
