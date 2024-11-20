@@ -20,7 +20,7 @@ class FileUploadView(APIView):
     parser_classes = [MultiPartParser]
 
     def post(self, request, *args, **kwargs):
-        files = request.FILES.get('files[]')
+        files = request.FILES.getlist('files[]')
         print(files)
 
         if not files:
