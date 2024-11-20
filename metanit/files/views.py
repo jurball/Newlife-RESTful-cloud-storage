@@ -45,18 +45,11 @@ class FileUploadView(APIView):
                     "message": f"File {file.name} has an unsupported file type",
                 })
                 continue
-            file_name = file.name
-            file_extension = os.path.splitext(file.name)[1]
-
-            counter = 1
-            while Files.objects.filter(user=request.user, name=file_name).exists():
-                file_name = f"{os.path.splitext(file.name)[0]} ({counter}){file_extension}"
-                counter += 1
 
             user_file = Files.objects.create(
                 user=request.user,
                 file=file,
-                name=file_name
+                name=file.name
             )
 
             serializer = FilesSerializer(user_file, context={'request': request})
