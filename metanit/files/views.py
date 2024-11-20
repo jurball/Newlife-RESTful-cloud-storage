@@ -7,7 +7,7 @@ from rest_framework.parsers import MultiPartParser
 from files.serializers import FilesSerializer
 import os
 
-allowed_types = ["application/pdf"
+allowed_types = ["application/pdf",
                  "application/msword",
                  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                  "application/zip",
@@ -21,7 +21,6 @@ class FileUploadView(APIView):
 
     def post(self, request, *args, **kwargs):
         files = request.FILES.getlist('files[]')
-        print(files)
 
         if not files:
             return Response({
@@ -68,3 +67,31 @@ class FileUploadView(APIView):
             })
 
         return Response(response_data, status=status.HTTP_200_OK)
+
+class FileDeleteView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, file_id, *args, **kwargs):
+        try:
+            file = Files.objects.get(file_id=file_id)
+        except Files.DoesNotExist:
+            return Response({
+                "success": False,
+                "message": "File does not exist",
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        if file.user != request.user:
+            return Response({
+                "success": False,
+                "message": "You do not have permission to delete this file",
+            }, status=status.HTTP_403_FORBIDDEN)
+
+        if os.path.exists(file.file.path):
+            os.remove(file.file.path)
+
+        file.delete()
+
+        return Response({
+            "success": True,
+            "message": "File deleted",
+        }, status=status.HTTP_200_OK)
