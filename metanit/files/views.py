@@ -1,3 +1,6 @@
+import string
+import random
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
@@ -46,10 +49,13 @@ class FileUploadView(APIView):
                 })
                 continue
 
+            file_id = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+
             user_file = Files.objects.create(
                 user=request.user,
                 file=file,
-                name=file.name
+                name=file.name,
+                file_id=file_id,
             )
 
             serializer = FilesSerializer(user_file, context={'request': request})

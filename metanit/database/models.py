@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User, AbstractUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.conf import settings
-from .utils import generate_file_id, user_directory_path
-
+from .utils import user_directory_path
+import os
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -56,7 +56,7 @@ class Files(models.Model):
     )
     file = models.FileField(upload_to=user_directory_path, verbose_name='Файл')
     name = models.CharField(max_length=255, verbose_name='Имя')
-    file_id = models.CharField(max_length=10, default=generate_file_id, unique=True)
+    file_id = models.CharField(max_length=10, unique=True)
 
     class Meta:
         verbose_name = 'Файл'
@@ -66,4 +66,19 @@ class Files(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            names = Files.objects.filter(file__endswith=self.file.name)
+            print(names)
+            if names:
+                # len_names = len(names) - 1
+                file_type = self.file.name.split('.')[-1].lower()
+                file_name = self.file.name.split('.')[0]
+                self.file.name = f"{file_name} ({len(names)}).{file_type}"
+                self.name = self.file.name
+        super().save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        if os.path.exists(self.file.path):
+            os.remove(self.file.path)
+        super().delete(*args, **kwargs)

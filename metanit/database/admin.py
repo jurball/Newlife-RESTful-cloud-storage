@@ -13,4 +13,4 @@ class CustomUserAdmin(admin.ModelAdmin):
 
 @admin.register(Files)
 class FilesAdmin(admin.ModelAdmin):
-    list_display = ('file', 'user', 'file_id')
+    list_display = ('file', 'user', 'file_id', 'name')
