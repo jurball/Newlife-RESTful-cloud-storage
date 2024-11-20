@@ -54,7 +54,10 @@ class Files(models.Model):
         related_name='files',
         verbose_name='Пользователь'
     )
-    file = models.FileField(upload_to=user_directory_path, verbose_name='Файл')
+    file = models.FileField(
+        # upload_to=user_directory_path,
+        verbose_name='Файл'
+    )
     name = models.CharField(max_length=255, verbose_name='Имя')
     file_id = models.CharField(max_length=10, unique=True)
 
@@ -68,14 +71,20 @@ class Files(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            names = Files.objects.filter(file__endswith=self.file.name)
-            print(names)
-            if names:
-                # len_names = len(names) - 1
-                file_type = self.file.name.split('.')[-1].lower()
-                file_name = self.file.name.split('.')[0]
-                self.file.name = f"{file_name} ({len(names)}).{file_type}"
-                self.name = self.file.name
+            file_name, file_extension = os.path.splitext(self.file.name)
+
+            new_name = file_name + file_extension
+            counter = 1
+
+            while Files.objects.filter(file__endswith=new_name).exists():
+                # new_name = f"{file_name}\({counter}\){file_extension}"
+                new_name = file_name + '_' + str(counter) + file_extension
+                self.name = f"{file_name} ({counter}){file_extension}"
+
+                counter += 1
+
+            self.file.name = new_name  # Дjango
+
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
