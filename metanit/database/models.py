@@ -55,7 +55,7 @@ class Files(models.Model):
         verbose_name='Пользователь'
     )
     file = models.FileField(
-        # upload_to=user_directory_path,
+        upload_to=user_directory_path,
         verbose_name='Файл'
     )
     name = models.CharField(max_length=255, verbose_name='Имя')
@@ -77,7 +77,6 @@ class Files(models.Model):
             counter = 1
 
             while Files.objects.filter(file__endswith=new_name).exists():
-                # new_name = f"{file_name}\({counter}\){file_extension}"
                 new_name = file_name + '_' + str(counter) + file_extension
                 self.name = f"{file_name} ({counter}){file_extension}"
 
