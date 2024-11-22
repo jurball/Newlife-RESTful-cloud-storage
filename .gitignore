@@ -163,3 +163,4 @@ cython_debug/
 /metanit/database/migrations/
 /admin.txt
 /metanit/media/
+/qodana.yaml
