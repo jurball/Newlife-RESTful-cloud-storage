@@ -58,8 +58,13 @@ class Files(models.Model):
         upload_to=user_directory_path,
         verbose_name='Файл'
     )
-    name = models.CharField(max_length=255, verbose_name='Имя')
+    name = models.CharField(max_length=255, verbose_name='Владелец')
     file_id = models.CharField(max_length=10, unique=True)
+    shared_with = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        through='FileAccess',
+        related_name="shared_files"
+    )
 
     class Meta:
         verbose_name = 'Файл'
@@ -90,3 +95,17 @@ class Files(models.Model):
         if os.path.exists(self.file.path):
             os.remove(self.file.path)
         super().delete(*args, **kwargs)
+
+class FileAccess(models.Model):
+    ACCESS_CHOICES = [
+        ('author', 'Автор'),
+        ('co-author', 'Соавтор'),
+    ]
+
+    file = models.ForeignKey(Files, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    access_type = models.CharField(
+        max_length=20,
+        choices=ACCESS_CHOICES,
+        default="co-author"
+    )

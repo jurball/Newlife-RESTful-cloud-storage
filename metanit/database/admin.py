@@ -1,5 +1,6 @@
 from django.contrib import admin
-from database.models import CustomUser, Files
+from database.models import CustomUser, Files, FileAccess
+
 
 @admin.register(CustomUser)
 class CustomUserAdmin(admin.ModelAdmin):
@@ -14,3 +15,7 @@ class CustomUserAdmin(admin.ModelAdmin):
 @admin.register(Files)
 class FilesAdmin(admin.ModelAdmin):
     list_display = ('file', 'user', 'file_id', 'name')
+
+@admin.register(FileAccess)
+class FileAccessAdmin(admin.ModelAdmin):
+    list_display = ('file', 'user', 'access_type')
