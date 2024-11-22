@@ -1,6 +1,8 @@
 import string
 import random
 import os
+
+from django.http import FileResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
@@ -110,6 +112,23 @@ class FileEmployView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-    def get(self, request, file_id, *args, **kwargs):
-        pass
+    def get(self, request, file_id):
+        file = get_file_or_404(file_id)
+        if isinstance(file, Response):
+            return file
+
+        permission_error = check_file_permission(file, request.user)
+        if permission_error:
+            return permission_error
+
+        try:
+            file_path = file.file.path
+            response = FileResponse(open(file_path, 'rb'), as_attachment=True)
+            response['Content-Disposition'] = f'attachment; filename="{file_path}"'
+            return response
+        except FileNotFoundError:
+            return Response({
+                "success": False,
+                "message": "File not found on the server",
+            }, status=status.HTTP_404_NOT_FOUND)
 
