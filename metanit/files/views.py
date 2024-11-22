@@ -1,13 +1,14 @@
 import string
 import random
 
+from django.core.serializers import serialize
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.core.exceptions import ValidationError
 from database.models import Files
 from rest_framework.parsers import MultiPartParser
-from files.serializers import FilesSerializer
+from files.serializers import FilesSerializer, FileEditSerializer
 import os
 
 allowed_types = ["application/pdf",
@@ -67,7 +68,7 @@ class FileUploadView(APIView):
 
         return Response(response_data, status=status.HTTP_200_OK)
 
-class FileDeleteView(APIView):
+class FileEmployView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def delete(self, request, file_id, *args, **kwargs):
@@ -94,3 +95,28 @@ class FileDeleteView(APIView):
             "success": True,
             "message": "File deleted",
         }, status=status.HTTP_200_OK)
+
+    def patch(self, request, file_id, *args, **kwargs):
+        try:
+            file = Files.objects.get(file_id=file_id)
+        except Files.DoesNotExist:
+            return Response({
+                "success": False,
+                "message": "File does not exist",
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        if file.user != request.user:
+            return Response({
+                "success": False,
+                "message": "You do not have permission to edit this file",
+            }, status=status.HTTP_403_FORBIDDEN)
+
+        serializer = FileEditSerializer(file, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"success": True, "message": "Renamed"},
+                status=status.HTTP_200_OK
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

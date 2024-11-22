@@ -12,3 +12,15 @@ class FilesSerializer(serializers.ModelSerializer):
     def get_url(self, obj):
 
         return self.context['request'].build_absolute_uri(f'/files/{obj.file_id}/')
+
+class FileEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Files
+        fields = ('name',)
+
+    def validate(self, data):
+        name = data.get('name', '').strip()
+        if not name:
+            raise serializers.ValidationError('Name cannot be empty')
+        data['name'] = name
+        return data
