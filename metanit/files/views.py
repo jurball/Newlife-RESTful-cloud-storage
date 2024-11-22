@@ -1,15 +1,14 @@
 import string
 import random
-
-from django.core.serializers import serialize
+import os
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from django.core.exceptions import ValidationError
 from database.models import Files
 from rest_framework.parsers import MultiPartParser
 from files.serializers import FilesSerializer, FileEditSerializer
-import os
+from files.utils import get_file_or_404, check_file_permission
+
 
 allowed_types = ["application/pdf",
                  "application/msword",
@@ -72,19 +71,14 @@ class FileEmployView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def delete(self, request, file_id, *args, **kwargs):
-        try:
-            file = Files.objects.get(file_id=file_id)
-        except Files.DoesNotExist:
-            return Response({
-                "success": False,
-                "message": "File does not exist",
-            }, status=status.HTTP_404_NOT_FOUND)
+        file_or_error = get_file_or_404(file_id)
+        if isinstance(file_or_error, Response):
+            return file_or_error
 
-        if file.user != request.user:
-            return Response({
-                "success": False,
-                "message": "You do not have permission to delete this file",
-            }, status=status.HTTP_403_FORBIDDEN)
+        file = file_or_error
+        permission_error = check_file_permission(file, request.user)
+        if permission_error:
+            return permission_error
 
         if os.path.exists(file.file.path):
             os.remove(file.file.path)
@@ -97,19 +91,14 @@ class FileEmployView(APIView):
         }, status=status.HTTP_200_OK)
 
     def patch(self, request, file_id, *args, **kwargs):
-        try:
-            file = Files.objects.get(file_id=file_id)
-        except Files.DoesNotExist:
-            return Response({
-                "success": False,
-                "message": "File does not exist",
-            }, status=status.HTTP_404_NOT_FOUND)
+        file_or_error = get_file_or_404(file_id)
+        if isinstance(file_or_error, Response):
+            return file_or_error
 
-        if file.user != request.user:
-            return Response({
-                "success": False,
-                "message": "You do not have permission to edit this file",
-            }, status=status.HTTP_403_FORBIDDEN)
+        file = file_or_error
+        permission_error = check_file_permission(file, request.user)
+        if permission_error:
+            return permission_error
 
         serializer = FileEditSerializer(file, data=request.data, partial=True)
         if serializer.is_valid():
@@ -119,4 +108,8 @@ class FileEmployView(APIView):
                 status=status.HTTP_200_OK
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def get(self, request, file_id, *args, **kwargs):
+        pass
 
