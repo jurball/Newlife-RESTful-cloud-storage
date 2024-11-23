@@ -102,10 +102,23 @@ class FileAccess(models.Model):
         ('co-author', 'Соавтор'),
     ]
 
-    file = models.ForeignKey(Files, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    file = models.ForeignKey(
+        Files,
+        on_delete=models.CASCADE,
+        verbose_name="Файл"
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        verbose_name="Пользователь файла"
+    )
     access_type = models.CharField(
         max_length=20,
         choices=ACCESS_CHOICES,
-        default="co-author"
+        default="co-author",
+        verbose_name="Тип доступа"
     )
+
+    class Meta:
+        verbose_name="Право"
+        verbose_name_plural="Права"

@@ -16,7 +16,7 @@ class AccessView(APIView):
 
         # Проверяем, является ли пользователь владельцем файла
         if file.user != request.user:
-            return Response({"detail": "Access denied."}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"message": "Forbidden for you"}, status=status.HTTP_403_FORBIDDEN)
 
         # Получаем email пользователя для добавления доступа
         email = request.data.get('email')
