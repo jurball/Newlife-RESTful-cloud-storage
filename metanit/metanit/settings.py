@@ -27,10 +27,16 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['192.168.1.156', 'localhost', '192.168.1.13']
 
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8080",
+    "http://192.168.1.12:3000",
+]
 
 # Application definition
 
 INSTALLED_APPS = [
+    "corsheaders",
     'users.apps.UsersConfig',
     'database.apps.DatabaseConfig',
     'django.contrib.admin',
@@ -58,6 +64,8 @@ REST_FRAMEWORK = {
 }
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

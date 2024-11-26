@@ -41,13 +41,13 @@ class AuthorizationView(APIView):
 
             return Response({
                 "success": True,  # Указывает, что операция прошла успешно
-                "message": "Success",  # Сообщение о успешной авторизации
+                "message": "Success",  # Сообщение об успешной авторизации
                 "token": token.key  # Возвращаем токен пользователя
             }, status=status.HTTP_200_OK)
-
+        error_message = serializer.errors.get("non_field_errors", ["Invalid data"])[0]
         return Response({
             "success": False,  # Указывает, что операция не удалась
-            "message": serializer.errors  # Возвращаем ошибки валидации
+            "message": error_message  # Возвращаем ошибки валидации
         }, status=status.HTTP_400_BAD_REQUEST)  # Указывает, что запрос содержит ошибки
 
 class LogoutView(APIView):

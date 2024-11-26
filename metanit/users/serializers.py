@@ -82,7 +82,7 @@ class AuthorizationSerializer(serializers.Serializer):
 
         if not user:
             # Если пользователь не найден, выбрасываем ошибку
-            raise serializers.ValidationError("Invalid email or password")  # Указывает, что email или пароль неверные
+            raise serializers.ValidationError("Login failed") # Указывает, что email или пароль неверные
 
         data["user"] = user  # Добавляем найденного пользователя в данные
         return data  # Возвращаем данные с пользователем
