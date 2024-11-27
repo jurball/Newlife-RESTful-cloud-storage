@@ -201,7 +201,7 @@ Below are the available API endpoints for testing the functionality of the **New
 
 #### **View shared files**
 - **Endpoint:** `GET  /shared`
-- **Description:** Delete access to file.
+- **Description:** Return shared files for user.
 - **Headers**
     ```headers
     Content-Type: application/json
